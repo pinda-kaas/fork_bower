@@ -7,7 +7,7 @@
  * # MainCtrl
  * Controller of the angularmainForkApp
  */
-angular.module('angularmainForkApp')
+angular.module('app')
   .controller('MainCtrl', function ($scope) {
     $scope.awesomeThings = [
       'HTML5 Boilerplate',

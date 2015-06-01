@@ -7,7 +7,7 @@
  * # AboutCtrl
  * Controller of the angularmainForkApp
  */
-angular.module('angularmainForkApp')
+angular.module('app')
   .controller('AboutCtrl', function ($scope) {
     $scope.awesomeThings = [
       'HTML5 Boilerplate',

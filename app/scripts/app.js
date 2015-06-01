@@ -9,7 +9,7 @@
  * Main module of the application.
  */
 angular
-  .module('angularmainForkApp', [
+  .module('app', [
     'ngAnimate',
     'ngCookies',
     'ngResource',
@@ -27,7 +27,12 @@ angular
         templateUrl: 'views/about.html',
         controller: 'AboutCtrl'
       })
+      .when('/', {
+        templateUrl: 'views/richlist.html',
+        controller: 'RichListCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });
-  });
+  })
+  .constant('_',window._);
