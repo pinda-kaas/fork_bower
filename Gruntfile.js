@@ -415,17 +415,17 @@ module.exports = function (grunt) {
     grunt.task.run(['serve:' + target]);
   });
 
-  //grunt.loadNpmTasks("grunt-protractor-runner");
+  grunt.loadNpmTasks("grunt-protractor-runner");
 
-  //grunt.registerTask('test', [
-  //  'clean:server',
-  //  'concurrent:test',
-  //  'autoprefixer',
-  //  'connect:test',
-  //  //'karma',
-  //  'protractor:run'
-  //]);
-  //
+  grunt.registerTask('test', [
+    'clean:server',
+    'concurrent:test',
+    'autoprefixer',
+    'connect:test',
+    'karma',
+    'protractor:run'
+  ]);
+
   //grunt.registerTask('build', [
   //  'clean:dist',
   //  'wiredep',
