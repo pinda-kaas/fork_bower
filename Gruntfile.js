@@ -14,6 +14,10 @@ module.exports = function (grunt) {
 
   // Time how long tasks take. Can help when optimizing build times
   require('time-grunt')(grunt);
+  grunt.loadNpmTasks('grunt-connect-proxy');
+
+  var proxySnippet = require('grunt-connect-proxy/lib/utils').proxyRequest;
+
 
   // Configurable paths for the application
   var appConfig = {
@@ -63,52 +67,84 @@ module.exports = function (grunt) {
       }
     },
 
-    // The actual grunt server settings
     connect: {
-      options: {
-        port: 9000,
-        // Change this to '0.0.0.0' to access the server from outside.
-        hostname: 'localhost',
-        livereload: 35729
-      },
-      livereload: {
+      server: {
         options: {
+          port: 9000,
+          hostname: 'localhost',
+          keepalive: true,
           open: true,
-          middleware: function (connect) {
-            return [
+          middleware: function (connect, options) {
+            return [proxySnippet,
               connect.static('.tmp'),
               connect().use(
                 '/bower_components',
                 connect.static('./bower_components')
               ),
               connect.static(appConfig.app)
+
             ];
           }
-        }
-      },
-      test: {
-        options: {
-          port: 9001,
-          middleware: function (connect) {
-            return [
-              connect.static('.tmp'),
-              connect.static('test'),
-              connect().use(
-                '/bower_components',
-                connect.static('./bower_components')
-              ),
-              connect.static(appConfig.app)
-            ];
+        },
+        proxies: [
+          {
+            context: '/cortex',
+            host: '10.10.2.202',
+            port: 8080,
+            https: false,
+            xforward: false,
+            hideHeaders: ['x-removed-header']
           }
-        }
-      },
-      dist: {
-        options: {
-          open: true,
-          base: 'dist'
-        }
+        ]
       }
     },
+
+    // The actual grunt server settings
+    //connect: {
+    //  options: {
+    //    port: 9000,
+    //    // Change this to '0.0.0.0' to access the server from outside.
+    //    hostname: 'localhost',
+    //    livereload: 35729
+    //  },
+    //  livereload: {
+    //    options: {
+    //      open: true,
+    //      middleware: function (connect) {
+    //        return [
+    //          connect.static('.tmp'),
+    //          connect().use(
+    //            '/bower_components',
+    //            connect.static('./bower_components')
+    //          ),
+    //          connect.static(appConfig.app)
+    //        ];
+    //      }
+    //    }
+    //  },
+    //  test: {
+    //    options: {
+    //      port: 9001,
+    //      middleware: function (connect) {
+    //        return [
+    //          connect.static('.tmp'),
+    //          connect.static('test'),
+    //          connect().use(
+    //            '/bower_components',
+    //            connect.static('./bower_components')
+    //          ),
+    //          connect.static(appConfig.app)
+    //        ];
+    //      }
+    //    }
+    //  },
+    //  dist: {
+    //    options: {
+    //      open: true,
+    //      base: 'dist'
+    //    }
+    //  }
+    //},
 
     // Make sure code styles are up to par and there are no obvious mistakes
     jshint: {
@@ -164,7 +200,7 @@ module.exports = function (grunt) {
     wiredep: {
       app: {
         src: ['app/index.html'],
-        ignorePath:  /\.\.\//
+        ignorePath: /\.\.\//
       }
       //sass: {
       //  src: ['app/styles/{,*/}*.{scss,sass}'],
@@ -237,7 +273,7 @@ module.exports = function (grunt) {
       html: ['dist/{,*/}*.html'],
       css: ['dist/styles/{,*/}*.css'],
       options: {
-        assetsDirs: ['dist','dist/images']
+        assetsDirs: ['dist', 'dist/images']
       }
     },
 
@@ -328,7 +364,7 @@ module.exports = function (grunt) {
     },
 
     // Copies remaining files to places other tasks can use
-       //copy: {
+    //copy: {
     //  dist: {
     //    files: [{
     //      expand: true,
@@ -402,10 +438,11 @@ module.exports = function (grunt) {
 
     grunt.task.run([
       'clean:server',
+      'configureProxies:server',
       'wiredep',
       'concurrent:server',
       'autoprefixer',
-      'connect:livereload',
+      'connect:server',
       'watch'
     ]);
   });
